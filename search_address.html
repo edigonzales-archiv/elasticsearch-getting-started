@@ -1,0 +1,77 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.16/themes/ui-lightness/jquery-ui.css" type="css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Base64/1.0.1/base64.min.js"></script>
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.16/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <style>
+        em {font-weight: bold;}  
+    </style>
+</head>
+
+<body>
+<script>
+    $.curCSS = function (element, attrib, val) {
+        $(element).css(attrib, val);
+    };
+
+    $(function() {
+        $("#keyword").autocomplete({
+            source: function(request, response) {
+
+                var searchTerms = request.term.toLowerCase().split(" ");
+                console.log(searchTerms);
+
+                var i;
+                var wildcardText = "";
+                for (i = 0; i < searchTerms.length; i++) { 
+                    wildcardText += "+" + searchTerms[i] + "* ";
+                }
+
+                var wildcard = { "query": wildcardText, "fields": [ "full_address" ]};
+                var postData = {
+                    "from" : 0, "size" : 50, "query": { "simple_query_string": wildcard },   "highlight" :  {"fields" : {"*" : {}}}
+                };
+                //onsole.log(JSON.stringify(wildcard));
+                //console.log(JSON.stringify(postData));
+                $.ajax({
+                    url: "http://localhost:9200/address/_search",
+                    type: "POST",
+                    crossDomain: true,
+                    dataType: "JSON",
+                    contentType: "application/json",
+                    data: JSON.stringify(postData),
+                    success: function(data) {
+                        //console.log(data.hits.hits);
+                        response($.map(data.hits.hits, function(item) {
+                            //console.log(item.highlight.full_address);
+                            return {
+                                //label: item._source.full_address,
+                                label: item.highlight.full_address,
+                                id: item.highlight.full_address
+                            }
+                        }));
+                    },
+                });
+            },
+            minLength: 2
+        })
+    });
+
+
+</script>
+
+
+<div class="demo">
+    <h1>Fubar</h1>
+    <br>
+
+    <div class="ui-widget">
+        <label for="keyword">Keyword: </label>
+        <input id="keyword">
+    </div>
+ 
+
+</body>
+</html>
