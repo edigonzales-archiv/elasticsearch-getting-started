@@ -21,7 +21,7 @@
             source: function(request, response) {
 
                 var searchTerms = request.term.toLowerCase().split(" ");
-                console.log(searchTerms);
+                //console.log(searchTerms);
 
                 var i;
                 var wildcardText = "";
@@ -33,7 +33,7 @@
                 var postData = {
                     "from" : 0, "size" : 50, "query": { "simple_query_string": wildcard },   "highlight" :  {"fields" : {"*" : {}}}
                 };
-                //onsole.log(JSON.stringify(wildcard));
+                //console.log(JSON.stringify(wildcard));
                 //console.log(JSON.stringify(postData));
                 $.ajax({
                     url: "http://localhost:9200/address/_search",
