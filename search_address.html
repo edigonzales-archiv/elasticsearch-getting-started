@@ -26,6 +26,9 @@
                 var i;
                 var wildcardText = "";
                 for (i = 0; i < searchTerms.length; i++) { 
+                    if (searchTerms[i] == "") {
+                        continue;
+                    }
                     wildcardText += "+" + searchTerms[i] + "* ";
                 }
 
